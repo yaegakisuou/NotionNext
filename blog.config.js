@@ -205,10 +205,10 @@ const BLOG = {
     // 示例音乐列表。除了以下配置外，还可配置歌词，具体配置项看此文档 https://aplayer.js.org/#/zh-Hans/
     {
       name: '享楽の痛み',
-      artist: 'ｘｘ',
+      artist: '祖堅正慶',
       url: 'https://music.163.com/song/media/outer/url?id=1391211256.mp3',
       cover:
-            'https://p2.music.126.net/kn6ugISTonvqJh3LHLaPtQ==/599233837187278.jpg'
+            'https://p2.music.126.net/5ib-No5oUXX9lXqh6UagmA==/109951164367790434.jpg?param=130y130'
     },
     {
       name: '享楽の痛み',
