@@ -18,22 +18,13 @@ export default function WordCount() {
  * 更新字数统计和阅读时间
  */
 function countWords() {
-  const articleText = deleteHtmlTag(document.getElementById('notion-article')?.innerHTML)
+  const articleText = document.getElementById('notion-article')?.textContent?.trim() || ''
   const wordCount = fnGetCpmisWords(articleText)
   // 阅读速度 300-500每分钟
-  document.getElementById('wordCount').innerHTML = wordCount
-  document.getElementById('readTime').innerHTML = Math.floor(wordCount / 400) + 1
+  document.getElementById('wordCount').textContent = String(wordCount)
+  document.getElementById('readTime').textContent = String(Math.floor(wordCount / 400) + 1)
   const wordCountWrapper = document.getElementById('wordCountWrapper')
   wordCountWrapper.classList.remove('hidden')
-}
-
-// 去除html标签
-function deleteHtmlTag(str) {
-  if (!str) {
-    return ''
-  }
-  str = str.replace(/<[^>]+>|&[^>]+;/g, '').trim()// 去掉所有的html标签和&nbsp;之类的特殊符合
-  return str
 }
 
 // 用word方式计算正文字数
