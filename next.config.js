@@ -340,8 +340,9 @@ const nextConfig = {
           source: '/:path*{/}?',
           headers: [
             // 为了博客兼容性，不做过多安全限制
-            { key: 'Access-Control-Allow-Credentials', value: 'true' },
-            { key: 'Access-Control-Allow-Origin', value: '*' },
+            // Avoid broad credentialed CORS on public blog pages.
+            { key: 'X-Content-Type-Options', value: 'nosniff' },
+            { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
             {
               key: 'Access-Control-Allow-Methods',
               value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT'
