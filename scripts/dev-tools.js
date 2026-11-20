@@ -7,7 +7,7 @@
 
 const fs = require('fs')
 const path = require('path')
-const { execSync } = require('child_process')
+const { execSync, spawnSync } = require('child_process')
 
 // 颜色输出
 const colors = {
@@ -27,7 +27,24 @@ function log(message, color = 'reset') {
 function runCommand(command, description) {
   log(`\n🔧 ${description}...`, 'blue')
   try {
-    const output = execSync(command, { encoding: 'utf8', stdio: 'pipe' })
+    // Only literal developer commands are allowed; never pass arbitrary text to a shell.
+    const allowed = {
+      'npm install': ['install'],
+      'npm run quality': ['run', 'quality'],
+      'npm run bundle-report': ['run', 'bundle-report'],
+      'npm outdated': ['outdated']
+    }
+    if (!Object.prototype.hasOwnProperty.call(allowed, command)) {
+      throw new Error('Developer command not allowed')
+    }
+    const args = allowed[command]
+    const isWindows = process.platform === 'win32'
+    const result = isWindows
+      ? spawnSync('cmd.exe', ['/d', '/s', '/c', 'npm', ...args], { encoding: 'utf8', stdio: 'pipe', shell: false })
+      : spawnSync('npm', args, { encoding: 'utf8', stdio: 'pipe', shell: false })
+    if (result.error) throw result.error
+    if (result.status !== 0) throw new Error(result.stderr || 'Command failed')
+    const output = result.stdout
     log(`✅ ${description} 完成`, 'green')
     return { success: true, output }
   } catch (error) {
@@ -124,7 +141,8 @@ function clean() {
   dirsToClean.forEach(dir => {
     const fullPath = path.join(process.cwd(), dir)
     if (fs.existsSync(fullPath)) {
-      runCommand(`rm -rf ${fullPath}`, `清理 ${dir}`)
+      fs.rmSync(fullPath, { recursive: true, force: true })
+      log(`✅ 清理 ${dir} 完成`, 'green')
     } else {
       log(`📁 ${dir} 不存在，跳过`, 'cyan')
     }

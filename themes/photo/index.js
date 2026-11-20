@@ -245,7 +245,17 @@ const LayoutSlug = props => {
             if (item.querySelector('figcaption').textContent.trim() === value) {
               item.classList.add('active')
               if (iframe) {
-                iframe.setAttribute('src', iframe.getAttribute('data-src'))
+                const source = iframe.getAttribute('data-src')
+                try {
+                  const safeVideoUrl = new URL(source)
+                  if (safeVideoUrl.protocol === 'https:' || safeVideoUrl.protocol === 'http:') {
+                    iframe.setAttribute('src', safeVideoUrl.href)
+                  } else {
+                    iframe.removeAttribute('src')
+                  }
+                } catch {
+                  iframe.removeAttribute('src')
+                }
               }
             } else {
               item.classList.remove('active')

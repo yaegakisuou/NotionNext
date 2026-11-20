@@ -16,10 +16,16 @@ const BlogPostCard = ({ post, className }) => {
     post.pageIcon !== ''
       ? post.pageIcon
       : siteConfig('IMG_LAZY_LOAD_PLACEHOLDER')
-  pageIcon =
-    post.pageIcon.indexOf('amazonaws.com') !== -1
-      ? post.pageIcon + '&width=88'
-      : post.pageIcon
+  // Only a parsed AWS hostname qualifies for image parameter rewriting.
+  try {
+    const imageUrl = new URL(pageIcon)
+    if (imageUrl.hostname === 'amazonaws.com' || imageUrl.hostname.endsWith('.amazonaws.com')) {
+      imageUrl.searchParams.set('width', '88')
+      pageIcon = imageUrl.toString()
+    }
+  } catch {
+    // Preserve the original icon or placeholder.
+  }
   return (
     <SmartLink
       href={post?.href}

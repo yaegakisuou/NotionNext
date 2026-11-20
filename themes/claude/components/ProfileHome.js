@@ -145,13 +145,28 @@ const isReadmeLikePage = page => {
   return getLastSlugPart(page.slug) === 'readme.md'
 }
 
-const sanitizeReadmeHtml = html => {
+// Render imported README as plain text until a trusted HTML sanitizer is available.
+const readmePlainText = html => {
   if (!html || typeof html !== 'string') return ''
-  return html
-    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
-    .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, '')
-    .replace(/\son[a-z]+\s*=\s*(['"]).*?\1/gi, '')
-    .replace(/\shref\s*=\s*(['"])\s*javascript:[\s\S]*?\1/gi, ' href="#"')
+  let result = ''
+  let insideTag = false
+  let quote = null
+  for (const char of html) {
+    if (!insideTag && char === '<') {
+      insideTag = true
+    } else if (insideTag) {
+      if (quote) {
+        if (char === quote) quote = null
+      } else if (char === '"' || char === "'") {
+        quote = char
+      } else if (char === '>') {
+        insideTag = false
+      }
+    } else {
+      result += char
+    }
+  }
+  return result.trim()
 }
 
 export default function ProfileHome(props) {
@@ -168,7 +183,7 @@ export default function ProfileHome(props) {
   }, [readmePage, posts])
 
   const readmeHtml = useMemo(
-    () => sanitizeReadmeHtml(readmeSource?.readmeHtml || ''),
+    () => readmePlainText(readmeSource?.readmeHtml || ''),
     [readmeSource?.readmeHtml]
   )
   const readmeExcerpt = readmeSource?.excerpt || ''
@@ -615,10 +630,7 @@ export default function ProfileHome(props) {
             <span className='claude-readme-card-meta-ext'>.md</span>
           </div>
           {readmeHtml ? (
-            <div
-              className='markdown-body'
-              dangerouslySetInnerHTML={{ __html: readmeHtml }}
-            />
+            <div className='markdown-body whitespace-pre-wrap'>{readmeHtml}</div>
           ) : (
             <p className='claude-readme-card-excerpt'>{readmeExcerpt}</p>
           )}
