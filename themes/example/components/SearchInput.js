@@ -1,9 +1,14 @@
-import { useRouter } from 'next/router'
 import { useGlobal } from '@/lib/global'
+import { useRouter } from 'next/router'
 import { useImperativeHandle, useRef, useState } from 'react'
 
 let lock = false
 
+/**
+ * 搜索输入框
+ * @param {*} param0 
+ * @returns 
+ */
 const SearchInput = ({ currentTag, keyword, cRef }) => {
   const { locale } = useGlobal()
   const router = useRouter()
@@ -18,8 +23,7 @@ const SearchInput = ({ currentTag, keyword, cRef }) => {
   const handleSearch = () => {
     const key = searchInputRef.current.value
     if (key && key !== '') {
-      router.push({ pathname: '/search/' + key }).then(r => {
-        console.log('搜索', key)
+      router.push({ pathname: '/search/' + encodeURIComponent(key) }).then(r => {
       })
     } else {
       router.push({ pathname: '/' }).then(r => {
