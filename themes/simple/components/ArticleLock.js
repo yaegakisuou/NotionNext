@@ -8,13 +8,13 @@ import { useEffect, useRef } from 'react'
  * @param validPassword(bool) 回调函数，校验正确回调入参为true
  * @returns
  */
-export const ArticleLock = props => {
+export default function ArticleLock (props) {
   const { validPassword } = props
   const { locale } = useGlobal()
 
-  const submitPassword = () => {
+  const submitPassword = async () => {
     const p = document.getElementById('password')
-    if (!validPassword(p?.value)) {
+    if (!(await validPassword(p?.value))) {
       const tips = document.getElementById('tips')
       if (tips) {
         tips.innerHTML = ''
@@ -28,7 +28,7 @@ export const ArticleLock = props => {
     passwordInputRef.current.focus()
   }, [])
 
-  return <div id='container' className='w-full flex justify-center items-center h-96 font-sans'>
+  return <div id='container' className='w-full flex justify-center items-center h-96 '>
         <div className='text-center space-y-3'>
             <div className='font-bold'>{locale.COMMON.ARTICLE_LOCK_TIPS}</div>
             <div className='flex mx-4'>
@@ -39,10 +39,11 @@ export const ArticleLock = props => {
                       }
                     }}
                     ref={passwordInputRef} // 绑定ref到passwordInputRef变量
-                    className='outline-none w-full text-sm pl-5 rounded-l transition focus:shadow-lg font-light leading-10 text-black dark:bg-gray-500 bg-gray-50'
+                    className='outline-none flex-1 min-w-0 text-sm pl-5 rounded-l transition focus:shadow-lg font-light leading-10 text-black dark:bg-gray-500 bg-gray-50'
                 ></input>
-                <div onClick={submitPassword} className="px-3 whitespace-nowrap cursor-pointer items-center justify-center py-2 rounded-r duration-300 bg-gray-300" >
-                    <i className={'duration-200 cursor-pointer fas fa-key dark:text-black'} >&nbsp;{locale.COMMON.SUBMIT}</i>
+                <div onClick={() => { void submitPassword() }} className="flex items-center justify-center whitespace-nowrap cursor-pointer px-4 leading-10 rounded-r duration-300 bg-gray-300 select-none" >
+                    <i className={'duration-200 cursor-pointer fas fa-key dark:text-black'} />
+                    <span className='ml-1'>{locale.COMMON.SUBMIT}</span>
                 </div>
             </div>
             <div id='tips'>

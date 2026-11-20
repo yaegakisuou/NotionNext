@@ -1,5 +1,5 @@
 import { useGlobal } from '@/lib/global'
-import React from 'react'
+import { useEffect, useState } from 'react'
 
 /**
  * 跳转到网页顶部
@@ -11,7 +11,7 @@ import React from 'react'
  */
 const JumpToTopButton = () => {
   const { locale } = useGlobal()
-  const [show, switchShow] = React.useState(false)
+  const [show, switchShow] = useState(false)
   const scrollListener = () => {
     const scrollY = window.pageYOffset
     const shouldShow = scrollY > 200
@@ -20,8 +20,8 @@ const JumpToTopButton = () => {
     }
   }
 
-  React.useEffect(() => {
-    document.addEventListener('scroll', scrollListener)
+  useEffect(() => {
+    document.addEventListener('scroll', scrollListener, { passive: true })
     return () => document.removeEventListener('scroll', scrollListener)
   }, [show])
 
