@@ -19,7 +19,9 @@ const SearchInput = ({ keyword, cRef, className }) => {
 
     if (key && key !== '') {
       setLoadingState(true)
-      location.href = '/search/' + key
+      router.push('/search/' + encodeURIComponent(key)).finally(() => {
+        setLoadingState(false)
+      })
     } else {
       router.push({ pathname: '/' }).then(r => {
       })
